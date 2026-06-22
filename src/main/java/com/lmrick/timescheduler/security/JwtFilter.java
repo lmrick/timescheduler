@@ -43,9 +43,9 @@ public class JwtFilter extends OncePerRequestFilter {
 					@Nonnull HttpServletResponse response,
 					@Nonnull FilterChain filterChain
 	) throws ServletException, IOException {
+		
 		String path = request.getRequestURI();
 		
-		// libera endpoints públicos
 		if (path.startsWith("/auth") || path.startsWith("/swagger") || path.startsWith("/v3")) {
 			filterChain.doFilter(request, response);
 			return;
