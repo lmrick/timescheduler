@@ -3,6 +3,7 @@ package com.lmrick.timescheduler.services;
 import com.lmrick.timescheduler.infrastructure.dto.CreateRequestDTO;
 import com.lmrick.timescheduler.infrastructure.dto.SchedulerResponseDTO;
 import com.lmrick.timescheduler.infrastructure.dto.UpdateRequestDTO;
+import com.lmrick.timescheduler.infrastructure.dto.UpdateStatusRequestDTO;
 import com.lmrick.timescheduler.infrastructure.entity.SchedulerEntity;
 import com.lmrick.timescheduler.infrastructure.exceptions.SchedulerBusyException;
 import com.lmrick.timescheduler.infrastructure.exceptions.SchedulerNotFoundException;
@@ -80,6 +81,14 @@ public class SchedulerService {
 		
 		SchedulerEntity saved = schedulerRepository.save(scheduled);
 		return schedulerMapper.toDTO(saved);
+	}
+	
+	public SchedulerResponseDTO updateStatus(Long id, UpdateStatusRequestDTO request) {
+		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+		scheduler.setStatus(request.status());
+		schedulerRepository.save(scheduler);
+		
+		return schedulerMapper.toDTO(scheduler);
 	}
 	
 	@Transactional

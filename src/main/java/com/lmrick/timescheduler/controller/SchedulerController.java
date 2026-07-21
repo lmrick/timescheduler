@@ -3,6 +3,7 @@ package com.lmrick.timescheduler.controller;
 import com.lmrick.timescheduler.infrastructure.dto.CreateRequestDTO;
 import com.lmrick.timescheduler.infrastructure.dto.SchedulerResponseDTO;
 import com.lmrick.timescheduler.infrastructure.dto.UpdateRequestDTO;
+import com.lmrick.timescheduler.infrastructure.dto.UpdateStatusRequestDTO;
 import com.lmrick.timescheduler.services.SchedulerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -70,6 +71,20 @@ public class SchedulerController {
 	) {
 		return ResponseEntity.ok(
 						schedulerService.updateScheduler(id, request)
+		);
+	}
+	
+	@PatchMapping("/{id}/status")
+	@Operation(
+					summary = "Update scheduler status",
+					description = "Updates the status of an existing schedule"
+	)
+	public ResponseEntity<SchedulerResponseDTO> updateStatus(
+					@PathVariable Long id,
+					@RequestBody @Valid UpdateStatusRequestDTO request
+	) {
+		return ResponseEntity.ok(
+						schedulerService.updateStatus(id, request)
 		);
 	}
 	
