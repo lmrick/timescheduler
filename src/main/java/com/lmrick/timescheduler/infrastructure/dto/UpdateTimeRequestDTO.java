@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalDateTime;
 
-public record UpdateRequestDTO(
+public record UpdateTimeRequestDTO(
 				@NotNull LocalDateTime scheduledTime
 ) {
 
