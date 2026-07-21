@@ -66,7 +66,7 @@ public class SchedulerController {
 					)
 	})
 	public ResponseEntity<SchedulerResponseDTO> saveScheduler(
-					@RequestBody @Valid CreateRequestDTO request
+					@RequestBody @Valid CreateSchedulerRequestDTO request
 	) {
 		return ResponseEntity
 						.status(201)

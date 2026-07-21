@@ -25,7 +25,7 @@ public class SchedulerService {
 		this.schedulerMapper = schedulerMapper;
 	}
 	
-	public SchedulerResponseDTO saveScheduler(CreateRequestDTO dto) {
+	public SchedulerResponseDTO saveScheduler(CreateSchedulerRequestDTO dto) {
 		LocalDateTime start = dto.scheduledTime();
 		LocalDateTime end = start.plusMinutes(dto.durationMinutes());
 		
