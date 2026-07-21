@@ -6,10 +6,11 @@ import jakarta.validation.constraints.NotNull;
 
 public record UpdateStatusRequestDTO(
 				@Schema(
-								description = "New scheduler status",
+								description = "New scheduler status. Possible values: PENDING, CONFIRMED, CANCELED",
 								example = "CONFIRMED"
 				)
-				@NotNull SchedulerStatus status
+				@NotNull(message = "Status is required")
+				SchedulerStatus status
 ) {
 
 }
