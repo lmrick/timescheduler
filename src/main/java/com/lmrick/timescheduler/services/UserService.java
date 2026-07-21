@@ -8,6 +8,8 @@ import com.lmrick.timescheduler.infrastructure.exceptions.RefreshTokenRevokedExc
 import com.lmrick.timescheduler.infrastructure.exceptions.UserNotFoundException;
 import com.lmrick.timescheduler.infrastructure.repository.UserRepository;
 import com.lmrick.timescheduler.security.JwtUtil;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
@@ -35,6 +37,24 @@ public class UserService {
 	public UserResponseDTO getByUsername(String username) {
 		UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
 		return new UserResponseDTO(user.getUsername(), user.getRole().name());
+	}
+	
+	public UserResponseDTO getById(Long id) {
+		UserEntity user = userRepository.findById(id)
+						.orElseThrow(() -> new UserNotFoundException("User not found"));
+		
+		return new UserResponseDTO(
+						user.getUsername(),
+						user.getRole().name()
+		);
+	}
+	
+	public Page<UserResponseDTO> getAll(Pageable pageable) {
+		return userRepository.findAll(pageable)
+						.map(user -> new UserResponseDTO(
+										user.getUsername(),
+										user.getRole().name()
+						));
 	}
 	
 	public AuthResponseDTO login(UserEntity user) {
