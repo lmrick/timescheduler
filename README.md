@@ -195,27 +195,29 @@ TimeschedulerApplication
 
 ## Authentication
 
-```
-POST /auth/register
-POST /auth/login
-POST /auth/refresh
-POST /auth/logout
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/auth/register` | Register a new user |
+| `POST` | `/auth/login` | Authenticate a user and return access and refresh tokens |
+| `POST` | `/auth/refresh` | Generate a new access token using a refresh token |
+| `POST` | `/auth/logout` | Invalidate the user's refresh token |
 
 ## Users
 
-```
-GET /users/{username}
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/users/{username}` | Retrieve a user by username |
 
 ## Scheduler
 
-```
-POST /scheduler
-GET /scheduler
-PUT /scheduler/{id}
-DELETE /scheduler/{id}
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/scheduler` | Create a new scheduler |
+| `GET` | `/scheduler` | List all schedulers |
+| `PUT` | `/scheduler/{id}` | Update a scheduler |
+| `PATCH` | `/scheduler/{id}/status` | Update the scheduler status |
+| `PATCH` | `/scheduler/{id}/phone` | Update the client phone number |
+| `DELETE` | `/scheduler/{id}` | Delete a scheduler |
 
 ---
 
