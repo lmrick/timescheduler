@@ -2,12 +2,12 @@ package com.lmrick.timescheduler.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.security.Key;
+import javax.crypto.SecretKey;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 @Component
@@ -22,35 +22,35 @@ public class JwtUtil {
 	@Value("${jwt.refresh-expiration}")
 	private long REFRESH_EXPIRATION;
 	
-	private Key getKey() {
-		return Keys.hmacShaKeyFor(SECRET.getBytes());
+	private SecretKey getKey() {
+		return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 	}
 	
 	private Claims extractAllClaims(String token) {
-		return Jwts.parserBuilder()
-						.setSigningKey(getKey())
+		return Jwts.parser()
+						.verifyWith(getKey())
 						.build()
-						.parseClaimsJws(token)
-						.getBody();
+						.parseSignedClaims(token)
+						.getPayload();
 	}
 	
 	public String generateToken(String username, Long version) {
 		return Jwts.builder()
-						.setSubject(username)
+						.subject(username)
 						.claim("version", version)
-						.setIssuedAt(new Date())
-						.setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
-						.signWith(getKey(), SignatureAlgorithm.HS256)
+						.issuedAt(new Date())
+						.expiration(new Date(System.currentTimeMillis() + EXPIRATION))
+						.signWith(getKey())
 						.compact();
 	}
 	
 	public String generateRefreshToken(String username, Long version) {
 		return Jwts.builder()
-						.setSubject(username)
+						.subject(username)
 						.claim("version", version)
-						.setIssuedAt(new Date())
-						.setExpiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
-						.signWith(getKey(), SignatureAlgorithm.HS256)
+						.issuedAt(new Date())
+						.expiration(new Date(System.currentTimeMillis() + REFRESH_EXPIRATION))
+						.signWith(getKey())
 						.compact();
 	}
 	
