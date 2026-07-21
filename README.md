@@ -209,6 +209,7 @@ TimeschedulerApplication
 | `GET` | `/users` | Retrieve paginated list of users |
 | `GET` | `/users/{id}` | Retrieve a user by ID |
 | `GET` | `/users/search?username={username}` | Retrieve a user by username |
+| `PUT` | `/users/{id}/role` | Update a user's role (Requires ADMIN role) |
 
 ## Scheduler
 
