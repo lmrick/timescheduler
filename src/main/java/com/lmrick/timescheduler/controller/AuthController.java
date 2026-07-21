@@ -18,8 +18,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
 @RequestMapping("/auth")
 @Tag(name = "Auth", description = "Authentication, token management and user session control")
@@ -112,7 +110,7 @@ public class AuthController {
 									description = "Invalid or expired refresh token"
 					)
 	})
-	public ResponseEntity<AuthResponseDTO> refresh(@RequestBody RefreshRequestDTO request) {
+	public ResponseEntity<AuthResponseDTO> refresh(@RequestBody RefreshTokenRequestDTO request) {
 		return ResponseEntity.ok(
 						userService.refresh(request.refreshToken())
 		);
