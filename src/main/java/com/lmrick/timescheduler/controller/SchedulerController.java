@@ -1,9 +1,6 @@
 package com.lmrick.timescheduler.controller;
 
-import com.lmrick.timescheduler.infrastructure.dto.CreateRequestDTO;
-import com.lmrick.timescheduler.infrastructure.dto.SchedulerResponseDTO;
-import com.lmrick.timescheduler.infrastructure.dto.UpdateRequestDTO;
-import com.lmrick.timescheduler.infrastructure.dto.UpdateStatusRequestDTO;
+import com.lmrick.timescheduler.infrastructure.dto.*;
 import com.lmrick.timescheduler.services.SchedulerService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -67,7 +64,7 @@ public class SchedulerController {
 	public ResponseEntity<SchedulerResponseDTO> updateScheduler(
 					@Parameter(description = "Schedule ID", example = "1")
 					@PathVariable Long id,
-					@RequestBody UpdateRequestDTO request
+					@RequestBody UpdateTimeRequestDTO request
 	) {
 		return ResponseEntity.ok(
 						schedulerService.updateScheduler(id, request)
@@ -85,6 +82,21 @@ public class SchedulerController {
 	) {
 		return ResponseEntity.ok(
 						schedulerService.updateStatus(id, request)
+		);
+	}
+	
+	@PatchMapping("/{id}/phone")
+	@Operation(
+					summary = "Update client phone",
+					description = "Updates the client's phone number for an existing schedule"
+	)
+	public ResponseEntity<SchedulerResponseDTO> updatePhone(
+					@Parameter(description = "Schedule ID", example = "1")
+					@PathVariable Long id,
+					@RequestBody @Valid UpdatePhoneRequestDTO request
+	) {
+		return ResponseEntity.ok(
+						schedulerService.updatePhone(id, request)
 		);
 	}
 	

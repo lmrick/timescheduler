@@ -1,9 +1,6 @@
 package com.lmrick.timescheduler.services;
 
-import com.lmrick.timescheduler.infrastructure.dto.CreateRequestDTO;
-import com.lmrick.timescheduler.infrastructure.dto.SchedulerResponseDTO;
-import com.lmrick.timescheduler.infrastructure.dto.UpdateRequestDTO;
-import com.lmrick.timescheduler.infrastructure.dto.UpdateStatusRequestDTO;
+import com.lmrick.timescheduler.infrastructure.dto.*;
 import com.lmrick.timescheduler.infrastructure.entity.SchedulerEntity;
 import com.lmrick.timescheduler.infrastructure.exceptions.SchedulerBusyException;
 import com.lmrick.timescheduler.infrastructure.exceptions.SchedulerNotFoundException;
@@ -15,7 +12,6 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -65,7 +61,7 @@ public class SchedulerService {
 						.toList();
 	}
 	
-	public SchedulerResponseDTO updateScheduler(Long id, UpdateRequestDTO request) {
+	public SchedulerResponseDTO updateScheduler(Long id, UpdateTimeRequestDTO request) {
 		SchedulerEntity scheduled = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
 		
 		LocalDateTime newStart = request.scheduledTime();
@@ -84,8 +80,16 @@ public class SchedulerService {
 	}
 	
 	public SchedulerResponseDTO updateStatus(Long id, UpdateStatusRequestDTO request) {
-		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new RuntimeException("Schedule not found"));
+		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
 		scheduler.setStatus(request.status());
+		schedulerRepository.save(scheduler);
+		
+		return schedulerMapper.toDTO(scheduler);
+	}
+	
+	public SchedulerResponseDTO updatePhone(Long id, UpdatePhoneRequestDTO request) {
+		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
+		scheduler.setClientPhone(request.clientPhone());
 		schedulerRepository.save(scheduler);
 		
 		return schedulerMapper.toDTO(scheduler);
