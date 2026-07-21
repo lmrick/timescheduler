@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 	private final UserRepository repository;
 	
-	@Autowired
 	public CustomUserDetailsService(UserRepository repository) {
 		this.repository = repository;
 	}
@@ -26,7 +25,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		return User.builder()
 						.username(user.getUsername())
 						.password(user.getPassword())
-						.roles(user.getRole().name())
+						.roles(user.getRole() != null ? user.getRole().name() : "USER")
 						.build();
 	}
 	

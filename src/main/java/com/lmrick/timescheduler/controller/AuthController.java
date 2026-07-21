@@ -59,7 +59,9 @@ public class AuthController {
 									description = "Invalid credentials"
 					)
 	})
-	public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO request) {
+	public ResponseEntity<AuthResponseDTO> login(
+					@RequestBody AuthRequestDTO request
+	) {
 		Authentication auth = authenticationManager.authenticate(
 						new UsernamePasswordAuthenticationToken(
 										request.username(),
@@ -67,9 +69,9 @@ public class AuthController {
 						)
 		);
 		
-		UserEntity user = userService.getEntityByUsername(auth.getName());
-		
-		return ResponseEntity.ok(userService.login(user));
+		return ResponseEntity.ok(
+						userService.login(auth.getName())
+		);
 	}
 	
 	@PostMapping("/register")

@@ -1,5 +1,6 @@
 package com.lmrick.timescheduler.controller;
 
+import com.lmrick.timescheduler.infrastructure.dto.UpdateRoleRequestDTO;
 import com.lmrick.timescheduler.infrastructure.dto.UserResponseDTO;
 import com.lmrick.timescheduler.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,11 +9,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -101,6 +104,40 @@ public class UserController {
 					@RequestParam String username
 	) {
 		return ResponseEntity.ok(userService.getByUsername(username));
+	}
+	
+	@PutMapping("/{id}/role")
+	@PreAuthorize("hasRole('ADMIN')")
+	@Operation(
+					summary = "Update user role",
+					description = "Updates a user's role. Only administrators can perform this operation."
+	)
+	@ApiResponses({
+					@ApiResponse(
+									responseCode = "200",
+									description = "User role updated successfully"
+					),
+					@ApiResponse(
+									responseCode = "401",
+									description = "Unauthorized"
+					),
+					@ApiResponse(
+									responseCode = "403",
+									description = "Forbidden - admin access required"
+					),
+					@ApiResponse(
+									responseCode = "404",
+									description = "User not found"
+					)
+	})
+	public ResponseEntity<UserResponseDTO> updateRole(
+					@Parameter(description = "User ID", example = "1")
+					@PathVariable Long id,
+					@RequestBody @Valid UpdateRoleRequestDTO request
+	) {
+		return ResponseEntity.ok(
+						userService.updateRole(id, request.role())
+		);
 	}
 	
 }

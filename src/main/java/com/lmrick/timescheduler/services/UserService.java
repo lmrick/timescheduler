@@ -2,6 +2,7 @@ package com.lmrick.timescheduler.services;
 
 import com.lmrick.timescheduler.infrastructure.dto.AuthResponseDTO;
 import com.lmrick.timescheduler.infrastructure.dto.UserResponseDTO;
+import com.lmrick.timescheduler.infrastructure.entity.Role;
 import com.lmrick.timescheduler.infrastructure.entity.UserEntity;
 import com.lmrick.timescheduler.infrastructure.exceptions.InvalidTokenException;
 import com.lmrick.timescheduler.infrastructure.exceptions.RefreshTokenRevokedException;
@@ -57,10 +58,13 @@ public class UserService {
 						));
 	}
 	
-	public AuthResponseDTO login(UserEntity user) {
+	public AuthResponseDTO login(String username) {
+		UserEntity user = getEntityByUsername(username);
+		
 		String accessToken = jwtUtil.generateToken(
 						user.getUsername(),
-						user.getTokenVersion()
+						user.getTokenVersion(),
+						user.getRole().name()
 		);
 		
 		String refreshToken = jwtUtil.generateRefreshToken(
@@ -71,11 +75,30 @@ public class UserService {
 		user.setRefreshTokenHash(hash(refreshToken));
 		userRepository.save(user);
 		
-		return new AuthResponseDTO(accessToken, refreshToken, new UserResponseDTO(user.getUsername(), user.getRole().name()));
+		return new AuthResponseDTO(
+						accessToken,
+						refreshToken,
+						new UserResponseDTO(
+										user.getUsername(),
+										user.getRole().name()
+						)
+		);
 	}
 	
 	public AuthResponseDTO refresh(String refreshToken) {
-		JwtTokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
+		
+		JwtTokenInfo tokenInfo;
+		
+		try {
+			tokenInfo = jwtUtil.parseToken(refreshToken);
+		} catch (Exception e) {
+			throw new InvalidTokenException("Invalid refresh token");
+		}
+		
+		if (tokenInfo.username() == null) {
+			throw new InvalidTokenException("Invalid refresh token");
+		}
+		
 		UserEntity user = getEntityByUsername(tokenInfo.username());
 		
 		if (!jwtUtil.validateRefreshToken(
@@ -93,7 +116,8 @@ public class UserService {
 		
 		String newAccessToken = jwtUtil.generateToken(
 						user.getUsername(),
-						user.getTokenVersion()
+						user.getTokenVersion(),
+						user.getRole().name()
 		);
 		
 		String newRefreshToken = jwtUtil.generateRefreshToken(
@@ -102,6 +126,7 @@ public class UserService {
 		);
 		
 		user.setRefreshTokenHash(hash(newRefreshToken));
+		
 		userRepository.save(user);
 		
 		return new AuthResponseDTO(
@@ -115,12 +140,23 @@ public class UserService {
 	}
 	
 	public void logout(String token) {
-		if (!jwtUtil.validateToken(token, null)) {
+		JwtTokenInfo tokenInfo;
+		
+		try {
+			tokenInfo = jwtUtil.parseToken(token);
+		} catch (Exception e) {
 			throw new InvalidTokenException("Invalid token");
 		}
 		
-		String username = jwtUtil.extractUsername(token);
-		UserEntity user = getEntityByUsername(username);
+		if (tokenInfo.username() == null) {
+			throw new InvalidTokenException("Invalid refresh token");
+		}
+		
+		UserEntity user = getEntityByUsername(tokenInfo.username());
+		
+		if (!jwtUtil.validateToken(tokenInfo, user.getTokenVersion())) {
+			throw new InvalidTokenException("Invalid token");
+		}
 		
 		user.setTokenVersion(user.getTokenVersion() + 1);
 		user.setRefreshTokenHash(null);
@@ -128,16 +164,36 @@ public class UserService {
 		userRepository.save(user);
 	}
 	
-	private String hash(String token) {
-		MessageDigest digest = null;
-		try {
-			digest = MessageDigest.getInstance("SHA-256");
-		} catch (NoSuchAlgorithmException e) {
-			throw new RuntimeException(e);
+	public UserResponseDTO updateRole(Long id, Role role) {
+		UserEntity user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("User not found"));
+		
+		if (user.getRole() != role) {
+			user.setRole(role);
+			user.setTokenVersion(user.getTokenVersion() + 1);
+			user.setRefreshTokenHash(null);
+			
+			userRepository.save(user);
 		}
 		
-		byte[] hash = digest.digest(token.getBytes(StandardCharsets.UTF_8));
-		return Base64.getEncoder().encodeToString(hash);
+		return new UserResponseDTO(
+						user.getUsername(),
+						user.getRole().name()
+		);
+	}
+	
+	private String hash(String token) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			
+			byte[] hash = digest.digest(
+							token.getBytes(StandardCharsets.UTF_8)
+			);
+			
+			return Base64.getEncoder().encodeToString(hash);
+			
+		} catch (NoSuchAlgorithmException e) {
+			throw new IllegalStateException(e);
+		}
 	}
 	
 }

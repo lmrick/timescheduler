@@ -1,5 +1,6 @@
 package com.lmrick.timescheduler.security;
 
+import com.lmrick.timescheduler.infrastructure.entity.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -28,10 +29,12 @@ public class JwtUtil {
 	
 	public JwtTokenInfo parseToken(String token) {
 		Claims claims = extractClaims(token);
+		String role = claims.get("role", String.class);
 		
 		return new JwtTokenInfo(
 						claims.getSubject(),
 						claims.get("version", Long.class),
+						role != null ? Role.valueOf(role) : null,
 						claims.getExpiration()
 		);
 	}
@@ -44,17 +47,21 @@ public class JwtUtil {
 						.getPayload();
 	}
 	
-	public String generateToken(String username, Long version) {
+	public String generateToken(String username, Long version, String role) {
 		return Jwts.builder()
 						.subject(username)
 						.claim("version", version)
+						.claim("role", role)
 						.issuedAt(new Date())
 						.expiration(new Date(System.currentTimeMillis() + EXPIRATION))
 						.signWith(getKey())
 						.compact();
 	}
 	
-	public String generateRefreshToken(String username, Long version) {
+	public String generateRefreshToken(
+					String username,
+					Long version
+	) {
 		return Jwts.builder()
 						.subject(username)
 						.claim("version", version)
@@ -63,36 +70,14 @@ public class JwtUtil {
 						.signWith(getKey())
 						.compact();
 	}
-	
-	public String extractUsername(String token) {
-		return extractClaims(token).getSubject();
-	}
-	
-	public Long getTokenVersion(String token) {
-		return extractClaims(token).get("version", Long.class);
-	}
-	
-	public boolean isTokenExpired(String token) {
-		return extractClaims(token)
-						.getExpiration()
-						.before(new Date());
-	}
-	
-	public boolean validateToken(String token, Long currentVersion) {
-		try {
-			Claims claims = extractClaims(token);
-			
-			String username = claims.getSubject();
-			Long tokenVersion = claims.get("version", Long.class);
-			Date expiration = claims.getExpiration();
-			
-			return username != null
-						 && tokenVersion.equals(currentVersion)
-						 && expiration.after(new Date());
-			
-		} catch (Exception e) {
-			return false;
-		}
+
+	public boolean validateToken(
+					JwtTokenInfo tokenInfo,
+					Long currentVersion
+	) {
+		return tokenInfo.username() != null
+					 && tokenInfo.version().equals(currentVersion)
+					 && tokenInfo.expiration().after(new Date());
 	}
 	
 	public boolean validateRefreshToken(
@@ -102,8 +87,7 @@ public class JwtUtil {
 		try {
 			Claims claims = extractClaims(token);
 			
-			Long tokenVersion =
-							claims.get("version", Long.class);
+			Long tokenVersion = claims.get("version", Long.class);
 			
 			return claims.getSubject() != null
 						 && tokenVersion.equals(currentVersion)
