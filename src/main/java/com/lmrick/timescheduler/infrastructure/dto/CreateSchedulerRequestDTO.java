@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
-public record CreateRequestDTO(
+public record CreateSchedulerRequestDTO(
 				@Schema(
 								description = "Product or service name",
 								example = "Haircut"
