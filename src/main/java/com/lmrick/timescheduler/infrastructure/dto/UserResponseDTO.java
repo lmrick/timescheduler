@@ -1,20 +1,20 @@
 package com.lmrick.timescheduler.infrastructure.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import jakarta.validation.constraints.NotBlank;
 
 public record UserResponseDTO(
 				@Schema(
 								description = "Username of the user",
-								example = "JaneDoe"
+								example = "john.doe"
 				)
-				@NotBlank String username,
+				String username,
+				
 				
 				@Schema(
-								description = "User role",
+								description = "User access role",
 								example = "ADMIN"
 				)
-				@NotBlank String role
+				String role
 ) {
 
 }

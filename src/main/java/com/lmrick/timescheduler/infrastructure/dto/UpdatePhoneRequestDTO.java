@@ -10,7 +10,11 @@ public record UpdatePhoneRequestDTO(
 								example = "+55 11 99999-9999"
 				)
 				@NotBlank(message = "Client phone is required")
-				@Size(max = 20, message = "Client phone must not exceed 20 characters")
+				@Size(
+								min = 8,
+								max = 20,
+								message = "Client phone must be between 8 and 20 characters"
+				)
 				String clientPhone
 ) {
 

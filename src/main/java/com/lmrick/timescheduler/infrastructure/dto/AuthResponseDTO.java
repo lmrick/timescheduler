@@ -2,6 +2,7 @@ package com.lmrick.timescheduler.infrastructure.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record AuthResponseDTO(
 				@Schema(description = "JWT access token")
@@ -11,7 +12,7 @@ public record AuthResponseDTO(
 				@NotBlank String refreshToken,
 				
 				@Schema(description = "Authenticated user data")
-				@NotBlank UserResponseDTO user
+				@NotNull UserResponseDTO user
 ) {
 
 }
