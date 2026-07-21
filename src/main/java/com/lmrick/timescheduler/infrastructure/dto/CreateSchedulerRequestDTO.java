@@ -44,7 +44,7 @@ public record CreateSchedulerRequestDTO(
 				)
 				@Size(
 								min = 8,
-								max = 20,
+								max = 25,
 								message = "Client phone must be between 8 and 20 characters"
 				)
 				@NotBlank String clientPhone

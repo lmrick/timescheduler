@@ -89,7 +89,7 @@ public class SchedulerService {
 	
 	public SchedulerResponseDTO updatePhone(Long id, UpdatePhoneRequestDTO request) {
 		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Scheduler not found"));
-		scheduler.setClientPhone(request.clientPhone());
+		scheduler.setClientPhone(normalizePhone(request.clientPhone()));
 		schedulerRepository.save(scheduler);
 		
 		return schedulerMapper.toDTO(scheduler);
@@ -121,6 +121,16 @@ public class SchedulerService {
 			}
 		}
 		return false;
+	}
+	
+	private String normalizePhone(String phone) {
+		String normalized = phone.replaceAll("[^0-9+]", "");
+		
+		if (normalized.replace("+", "").length() < 8) {
+			throw new IllegalArgumentException("Invalid phone number");
+		}
+		
+		return normalized;
 	}
 	
 }

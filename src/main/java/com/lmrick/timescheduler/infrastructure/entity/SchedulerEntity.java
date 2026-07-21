@@ -44,7 +44,7 @@ public class SchedulerEntity {
 	@Column(nullable = false, length = 100)
 	private String client;
 	
-	@Column(length = 20)
+	@Column(length = 25)
 	private String clientPhone;
 	
 	@Column(nullable = false, updatable = false)
