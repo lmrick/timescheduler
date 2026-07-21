@@ -25,13 +25,12 @@ public class SchedulerEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private String product;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private String worker;
 	
-	@Schema(example = "2026-06-22T14:00:00")
 	@Column(nullable = false)
 	private LocalDateTime scheduledTime;
 	
@@ -42,13 +41,13 @@ public class SchedulerEntity {
 	@Column(nullable = false)
 	private SchedulerStatus status = SchedulerStatus.PENDING;
 	
-	@Column(nullable = false)
+	@Column(nullable = false, length = 100)
 	private String client;
 	
 	@Column(length = 20)
 	private String clientPhone;
 	
-	@Column(updatable = false)
+	@Column(nullable = false, updatable = false)
 	private LocalDateTime insertTime;
 	
 	@PrePersist
