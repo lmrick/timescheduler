@@ -221,13 +221,13 @@ DELETE /scheduler/{id}
 
 # Future Improvements
 
-- Store the JWT secret using environment variables instead of keeping it in `application.properties`. The current hardcoded secret is included **only for development and testing purposes**.
-- Replace the H2 in-memory database with PostgreSQL or MySQL for production.
-- Add unit and integration tests.
-- Implement pagination for list endpoints.
-- Add audit logging.
-- Create Docker and Docker Compose configurations.
-- Configure CI/CD using GitHub Actions.
+- :red_circle: Store the JWT secret using environment variables instead of keeping it in `application.properties`. The current hardcoded secret is included **only for development and testing purposes**.
+- :red_circle: Replace the H2 in-memory database with PostgreSQL or MySQL for production.
+- :red_circle: Add unit and integration tests.
+- :red_circle: Implement pagination for list endpoints.
+- :red_circle: Add audit logging.
+- :red_circle: Create Docker and Docker Compose configurations.
+- :red_circle: Configure CI/CD using GitHub Actions.
 
 ---
 
