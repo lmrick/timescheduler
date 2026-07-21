@@ -8,8 +8,7 @@ public record UserResponseDTO(
 								description = "Username of the user",
 								example = "JaneDoe"
 				)
-				@NotBlank
-				String username,
+				@NotBlank String username,
 				
 				@Schema(
 								description = "User role",
