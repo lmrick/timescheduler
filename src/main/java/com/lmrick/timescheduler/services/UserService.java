@@ -7,7 +7,9 @@ import com.lmrick.timescheduler.infrastructure.exceptions.InvalidTokenException;
 import com.lmrick.timescheduler.infrastructure.exceptions.RefreshTokenRevokedException;
 import com.lmrick.timescheduler.infrastructure.exceptions.ResourceNotFoundException;
 import com.lmrick.timescheduler.infrastructure.repository.UserRepository;
+import com.lmrick.timescheduler.security.JwtTokenInfo;
 import com.lmrick.timescheduler.security.JwtUtil;
+import io.jsonwebtoken.Claims;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -73,16 +75,20 @@ public class UserService {
 	}
 	
 	public AuthResponseDTO refresh(String refreshToken) {
+		JwtTokenInfo tokenInfo = jwtUtil.parseToken(refreshToken);
+		UserEntity user = getEntityByUsername(tokenInfo.username());
 		
-		if (!jwtUtil.validateRefreshToken(refreshToken)) {
+		if (!jwtUtil.validateRefreshToken(
+						tokenInfo,
+						user.getTokenVersion()
+		)) {
 			throw new InvalidTokenException("Invalid refresh token");
 		}
 		
-		String username = jwtUtil.extractUsername(refreshToken);
-		UserEntity user = getEntityByUsername(username);
-		
-		if (!user.getRefreshTokenHash().equals(hash(refreshToken))) {
-			throw new RefreshTokenRevokedException("Refresh token reused or revoked");
+		if (!hash(refreshToken).equals(user.getRefreshTokenHash())) {
+			throw new RefreshTokenRevokedException(
+							"Refresh token reused or revoked"
+			);
 		}
 		
 		String newAccessToken = jwtUtil.generateToken(
@@ -109,8 +115,11 @@ public class UserService {
 	}
 	
 	public void logout(String token) {
-		String username = jwtUtil.extractUsername(token);
+		if (!jwtUtil.validateToken(token, null)) {
+			throw new InvalidTokenException("Invalid token");
+		}
 		
+		String username = jwtUtil.extractUsername(token);
 		UserEntity user = getEntityByUsername(username);
 		
 		user.setTokenVersion(user.getTokenVersion() + 1);

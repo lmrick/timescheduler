@@ -26,7 +26,17 @@ public class JwtUtil {
 		return Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
 	}
 	
-	private Claims extractAllClaims(String token) {
+	public JwtTokenInfo parseToken(String token) {
+		Claims claims = extractClaims(token);
+		
+		return new JwtTokenInfo(
+						claims.getSubject(),
+						claims.get("version", Long.class),
+						claims.getExpiration()
+		);
+	}
+	
+	private Claims extractClaims(String token) {
 		return Jwts.parser()
 						.verifyWith(getKey())
 						.build()
@@ -55,22 +65,22 @@ public class JwtUtil {
 	}
 	
 	public String extractUsername(String token) {
-		return extractAllClaims(token).getSubject();
+		return extractClaims(token).getSubject();
 	}
 	
 	public Long getTokenVersion(String token) {
-		return extractAllClaims(token).get("version", Long.class);
+		return extractClaims(token).get("version", Long.class);
 	}
 	
 	public boolean isTokenExpired(String token) {
-		return extractAllClaims(token)
+		return extractClaims(token)
 						.getExpiration()
 						.before(new Date());
 	}
 	
 	public boolean validateToken(String token, Long currentVersion) {
 		try {
-			Claims claims = extractAllClaims(token);
+			Claims claims = extractClaims(token);
 			
 			String username = claims.getSubject();
 			Long tokenVersion = claims.get("version", Long.class);
@@ -85,16 +95,32 @@ public class JwtUtil {
 		}
 	}
 	
-	public boolean validateRefreshToken(String token) {
+	public boolean validateRefreshToken(
+					String token,
+					Long currentVersion
+	) {
 		try {
-			Claims claims = extractAllClaims(token);
+			Claims claims = extractClaims(token);
+			
+			Long tokenVersion =
+							claims.get("version", Long.class);
 			
 			return claims.getSubject() != null
+						 && tokenVersion.equals(currentVersion)
 						 && claims.getExpiration().after(new Date());
 			
-		} catch (Exception e) {
+		} catch(Exception e) {
 			return false;
 		}
+	}
+	
+	public boolean validateRefreshToken(
+					JwtTokenInfo tokenInfo,
+					Long currentVersion
+	) {
+		return tokenInfo.username() != null
+					 && tokenInfo.version().equals(currentVersion)
+					 && tokenInfo.expiration().after(new Date());
 	}
 	
 }
