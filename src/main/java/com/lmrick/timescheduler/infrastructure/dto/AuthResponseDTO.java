@@ -6,13 +6,13 @@ import jakarta.validation.constraints.NotNull;
 
 public record AuthResponseDTO(
 				@Schema(description = "JWT access token")
-				@NotBlank String accessToken,
+				String accessToken,
 				
 				@Schema(description = "JWT refresh token")
-				@NotBlank String refreshToken,
+				String refreshToken,
 				
 				@Schema(description = "Authenticated user data")
-				@NotNull UserResponseDTO user
+				UserResponseDTO user
 ) {
 
 }
