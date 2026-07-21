@@ -10,7 +10,12 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Entity
-@Table(name = "users")
+@Table(
+				name = "users",
+				indexes = {
+								@Index(name = "idx_users_username", columnList = "username")
+				}
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,17 +26,27 @@ public class UserEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column(unique = true, nullable = false)
+	@Column(
+					nullable = false,
+					unique = true,
+					length = 50
+	)
 	private String username;
 	
-	@Column(nullable = false)
+	@Column(
+					nullable = false,
+					length = 100
+	)
 	private String password;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(nullable = false, length = 20)
 	private Role role;
 	
+	@Column(nullable = false)
 	private Long tokenVersion = 0L;
 	
+	@Column(length = 255)
 	private String refreshTokenHash;
 	
 }
