@@ -87,7 +87,7 @@ class AuthControllerTest {
 		when(authenticationManager.authenticate(any())).thenReturn(authentication);
 		when(authentication.getName()).thenReturn("raphael");
 		when(userService.getEntityByUsername("raphael")).thenReturn(user);
-		when(userService.login(user)).thenReturn(response);
+		when(userService.login(user.getUsername())).thenReturn(response);
 		
 		mockMvc.perform(post("/auth/login")
 										.contentType(MediaType.APPLICATION_JSON)
