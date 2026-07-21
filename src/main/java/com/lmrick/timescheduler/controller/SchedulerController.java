@@ -77,6 +77,7 @@ public class SchedulerController {
 					description = "Updates the status of an existing schedule"
 	)
 	public ResponseEntity<SchedulerResponseDTO> updateStatus(
+					@Parameter(description = "Schedule ID", example = "1")
 					@PathVariable Long id,
 					@RequestBody @Valid UpdateStatusRequestDTO request
 	) {
