@@ -206,7 +206,9 @@ TimeschedulerApplication
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| `GET` | `/users/{username}` | Retrieve a user by username |
+| `GET` | `/users` | Retrieve paginated list of users |
+| `GET` | `/users/{id}` | Retrieve a user by ID |
+| `GET` | `/users/search?username={username}` | Retrieve a user by username |
 
 ## Scheduler
 
@@ -226,7 +228,7 @@ TimeschedulerApplication
 - :red_circle: Store the JWT secret using environment variables instead of keeping it in `application.properties`. The current hardcoded secret is included **only for development and testing purposes**.
 - :red_circle: Replace the H2 in-memory database with PostgreSQL or MySQL for production.
 - :red_circle: Add unit and integration tests.
-- :red_circle: Implement pagination for list endpoints.
+- :green_circle: Implement pagination for list endpoints.
 - :red_circle: Add audit logging.
 - :red_circle: Create Docker and Docker Compose configurations.
 - :red_circle: Configure CI/CD using GitHub Actions.
