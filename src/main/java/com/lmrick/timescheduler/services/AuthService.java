@@ -2,9 +2,8 @@ package com.lmrick.timescheduler.services;
 
 import com.lmrick.timescheduler.infrastructure.dto.CreateUserDTO;
 import com.lmrick.timescheduler.infrastructure.dto.UserResponseDTO;
-import com.lmrick.timescheduler.infrastructure.entity.Role;
 import com.lmrick.timescheduler.infrastructure.entity.UserEntity;
-import com.lmrick.timescheduler.infrastructure.exceptions.UsernameAlreadyExistsException;
+import com.lmrick.timescheduler.infrastructure.exceptions.ConflictException;
 import com.lmrick.timescheduler.infrastructure.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -25,7 +24,7 @@ public class AuthService {
 	
 	public UserResponseDTO createUser(CreateUserDTO dto) {
 		if (userRepository.findByUsername(dto.username()).isPresent()) {
-			throw new UsernameAlreadyExistsException("Username already exists");
+			throw new ConflictException("Username already exists");
 		}
 		
 		UserEntity user = new UserEntity();

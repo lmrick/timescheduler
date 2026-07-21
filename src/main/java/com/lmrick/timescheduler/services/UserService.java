@@ -5,19 +5,17 @@ import com.lmrick.timescheduler.infrastructure.dto.UserResponseDTO;
 import com.lmrick.timescheduler.infrastructure.entity.UserEntity;
 import com.lmrick.timescheduler.infrastructure.exceptions.InvalidTokenException;
 import com.lmrick.timescheduler.infrastructure.exceptions.RefreshTokenRevokedException;
-import com.lmrick.timescheduler.infrastructure.exceptions.UserNotFoundException;
+import com.lmrick.timescheduler.infrastructure.exceptions.ResourceNotFoundException;
 import com.lmrick.timescheduler.infrastructure.repository.UserRepository;
 import com.lmrick.timescheduler.security.JwtUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
-import java.util.Map;
 
 @Service
 public class UserService {
@@ -31,17 +29,17 @@ public class UserService {
 	}
 	
 	public UserEntity getEntityByUsername(String username) {
-		return userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+		return userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 	}
 	
 	public UserResponseDTO getByUsername(String username) {
-		UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found"));
+		UserEntity user = userRepository.findByUsername(username).orElseThrow(() -> new ResourceNotFoundException("User not found"));
 		return new UserResponseDTO(user.getUsername(), user.getRole().name());
 	}
 	
 	public UserResponseDTO getById(Long id) {
 		UserEntity user = userRepository.findById(id)
-						.orElseThrow(() -> new UserNotFoundException("User not found"));
+						.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 		
 		return new UserResponseDTO(
 						user.getUsername(),

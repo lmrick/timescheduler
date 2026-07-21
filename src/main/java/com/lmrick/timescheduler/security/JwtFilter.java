@@ -1,7 +1,7 @@
 package com.lmrick.timescheduler.security;
 
 import com.lmrick.timescheduler.infrastructure.entity.UserEntity;
-import com.lmrick.timescheduler.infrastructure.exceptions.UserNotFoundException;
+import com.lmrick.timescheduler.infrastructure.exceptions.ResourceNotFoundException;
 import com.lmrick.timescheduler.infrastructure.repository.UserRepository;
 import com.lmrick.timescheduler.services.CustomUserDetailsService;
 import jakarta.annotation.Nonnull;
@@ -73,7 +73,7 @@ public class JwtFilter extends OncePerRequestFilter {
 			if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
 				
 				UserEntity user = userRepository.findByUsername(username)
-								.orElseThrow(() -> new UserNotFoundException("User not found"));
+								.orElseThrow(() -> new ResourceNotFoundException("User not found"));
 				
 				if (!jwtUtil.validateToken(token, user.getTokenVersion())) {
 					response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

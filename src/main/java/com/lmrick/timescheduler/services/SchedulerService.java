@@ -2,8 +2,8 @@ package com.lmrick.timescheduler.services;
 
 import com.lmrick.timescheduler.infrastructure.dto.*;
 import com.lmrick.timescheduler.infrastructure.entity.SchedulerEntity;
-import com.lmrick.timescheduler.infrastructure.exceptions.SchedulerBusyException;
-import com.lmrick.timescheduler.infrastructure.exceptions.SchedulerNotFoundException;
+import com.lmrick.timescheduler.infrastructure.exceptions.ConflictException;
+import com.lmrick.timescheduler.infrastructure.exceptions.ResourceNotFoundException;
 import com.lmrick.timescheduler.infrastructure.mapper.SchedulerMapper;
 import com.lmrick.timescheduler.infrastructure.repository.SchedulerRepository;
 import jakarta.transaction.Transactional;
@@ -37,7 +37,7 @@ public class SchedulerService {
 						);
 		
 		if (!conflicts.isEmpty()) {
-			throw new SchedulerBusyException("Scheduler time already busy");
+			throw new ConflictException("Scheduler time already busy");
 		}
 		
 		SchedulerEntity entity = new SchedulerEntity();
@@ -62,7 +62,7 @@ public class SchedulerService {
 	}
 	
 	public SchedulerResponseDTO updateScheduler(Long id, UpdateTimeRequestDTO request) {
-		SchedulerEntity scheduled = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
+		SchedulerEntity scheduled = schedulerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Scheduler not found"));
 		
 		LocalDateTime newStart = request.scheduledTime();
 		LocalDateTime newEnd = newStart.plusMinutes(scheduled.getDurationMinutes());
@@ -70,7 +70,7 @@ public class SchedulerService {
 		List<SchedulerEntity> conflicts = schedulerRepository.findByWorker(scheduled.getWorker());
 		
 		if (hasConflict(newStart, newEnd, conflicts, id)) {
-			throw new SchedulerBusyException("Scheduler time already busy");
+			throw new ConflictException("Scheduler time already busy");
 		}
 		
 		scheduled.setScheduledTime(newStart);
@@ -80,7 +80,7 @@ public class SchedulerService {
 	}
 	
 	public SchedulerResponseDTO updateStatus(Long id, UpdateStatusRequestDTO request) {
-		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
+		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Scheduler not found"));
 		scheduler.setStatus(request.status());
 		schedulerRepository.save(scheduler);
 		
@@ -88,7 +88,7 @@ public class SchedulerService {
 	}
 	
 	public SchedulerResponseDTO updatePhone(Long id, UpdatePhoneRequestDTO request) {
-		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
+		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Scheduler not found"));
 		scheduler.setClientPhone(request.clientPhone());
 		schedulerRepository.save(scheduler);
 		
@@ -97,7 +97,7 @@ public class SchedulerService {
 	
 	@Transactional
 	public void deleteScheduler(Long id) {
-		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new SchedulerNotFoundException("Scheduler not found"));
+		SchedulerEntity scheduler = schedulerRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Scheduler not found"));
 		schedulerRepository.delete(scheduler);
 	}
 	
